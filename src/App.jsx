@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 
 function App() {
   const [isSpinning, setIsSpinning] = useState(false)
-  const [winningNumbers, setWinningNumbers] = useState([1, 2, 3, 4, 5, 6])
   const [showPrize, setShowPrize] = useState(false)
   const [scrollPositions, setScrollPositions] = useState([0, 0, 0, 0, 0, 0])
   const panelRefs = useRef([])
@@ -103,7 +102,6 @@ function App() {
       } else {
         // Animation complete - ensure all panels are at exact final position
         setScrollPositions([alignedFinalPosition, alignedFinalPosition, alignedFinalPosition, alignedFinalPosition, alignedFinalPosition, alignedFinalPosition])
-        setWinningNumbers([targetNumber, targetNumber, targetNumber, targetNumber, targetNumber, targetNumber])
         setIsSpinning(false)
 
         // Show prize message after a short delay
@@ -119,13 +117,12 @@ function App() {
   // Reset function to start fresh
   const reset = () => {
     setScrollPositions([0, 0, 0, 0, 0, 0])
-    setWinningNumbers([1, 2, 3, 4, 5, 6])
     setShowPrize(false)
     setIsSpinning(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-950 via-black to-purple-950 relative overflow-hidden">
+    <div className="h-screen bg-gradient-to-b from-purple-950 via-black to-purple-950 relative overflow-hidden">
       {/* Animated background particles and lines */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Glowing particles */}
@@ -166,12 +163,12 @@ function App() {
         </svg>
       </div>
 
-      <div className="relative z-10 min-h-screen flex flex-col items-center p-8" style={{ paddingBottom: 0 }}>
+      <div className="relative z-10 h-screen flex flex-col items-center p-8 overflow-hidden" style={{ paddingBottom: 0 }}>
         {/* Magenta arc at top */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-pink-500/40 to-transparent blur-sm"></div>
         
         {/* CONGRATULATION Image */}
-        <div className="mb-8 relative flex items-center justify-center">
+        <div className={`relative flex items-center justify-center transition-all duration-500 ${showPrize ? 'mt-4 -translate-y-8' : 'mt-8'}`}>
           <div className="relative inline-block">
             {/* CONGRATULATION Image */}
             <img 
@@ -180,7 +177,7 @@ function App() {
               className="relative z-10 max-w-full h-auto"
               style={{
                 filter: 'drop-shadow(0 0 30px rgba(96, 165, 250, 0.8)) drop-shadow(0 0 60px rgba(96, 165, 250, 0.6))',
-                maxHeight: '200px',
+                maxHeight: '120px',
                 width: 'auto'
               }}
             />
@@ -260,6 +257,25 @@ function App() {
           </div>
         </div>
 
+        {/* 1ST PRIZE Message */}
+        {showPrize && (
+          <div className="text-center animate-fade-in relative z-20" style={{ marginTop: '20px', marginBottom: '20px' }}>
+            <div className="inline-block">
+              <h2 
+                className="text-5xl md:text-6xl font-bold mb-4"
+                style={{
+                  color: '#ef4444',
+                  textShadow: '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.6), 0 0 60px rgba(239, 68, 68, 0.4)',
+                  letterSpacing: '0.1em',
+                  fontWeight: '900'
+                }}
+              >
+                1ST PRIZE
+              </h2>
+            </div>
+          </div>
+        )}
+
         {/* Number Panels Container - matching Figma layout exactly */}
         <div className="flex gap-3 md:gap-4 relative z-10 justify-center items-end" style={{ width: '100%', maxWidth: '1200px', marginTop: 'auto', marginBottom: '80px' }}>
           {numbers.map((panelNum, panelIndex) => (
@@ -296,7 +312,7 @@ function App() {
                       // Positioned to match the frame opening in each.png
                       // Frame is in upper portion, numbers should be large and prominent
                       // Positioned at bottom of frame area to eliminate gap with pedestal
-                      bottom: '48%',
+                      bottom: '25%',
                       left: '50%',
                       transform: 'translateX(-50%)',
                       width: '50%',
@@ -376,21 +392,6 @@ function App() {
             )}
           </button>
         </div>
-
-        {/* First Prize Message */}
-        {showPrize && (
-          <div className="mt-12 text-center animate-fade-in relative z-20">
-            <div className="inline-block">
-              <h2 className="text-6xl md:text-7xl font-bold animate-color-switch mb-4">
-                First Prize
-              </h2>
-            </div>
-            <p className="mt-4 text-xl md:text-2xl text-cyan-300">
-              You won with number{' '}
-              <span className="font-bold text-white text-3xl">{winningNumbers[0]}</span>
-            </p>
-          </div>
-        )}
 
         {/* Reset Button */}
         {!isSpinning && (showPrize || scrollPositions.some(pos => pos > 0)) && (
