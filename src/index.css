@@ -48,9 +48,11 @@ body {
 @keyframes color-switch {
   0%, 100% {
     color: white;
+    -webkit-text-stroke: 1px white;
   }
   50% {
     color: #ef4444; /* red-500 */
+    -webkit-text-stroke: 1px #ef4444;
   }
 }
 

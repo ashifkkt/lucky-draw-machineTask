@@ -1,13 +1,47 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 function App() {
   const [isSpinning, setIsSpinning] = useState(false)
   const [showPrize, setShowPrize] = useState(false)
   const [scrollPositions, setScrollPositions] = useState([0, 0, 0, 0, 0, 0])
+  const [numberHeight, setNumberHeight] = useState(null)
+  const [visibleAreaHeight, setVisibleAreaHeight] = useState(null)
   const panelRefs = useRef([])
 
   // Numbers 1-6 for each panel
   const numbers = [1, 2, 3, 4, 5, 6]
+
+  // Measure actual dimensions for accurate centering
+  useEffect(() => {
+    const measureDimensions = () => {
+      const scrollContainer = panelRefs.current[0]
+      if (scrollContainer) {
+        const containerHeight = scrollContainer.offsetHeight
+        setVisibleAreaHeight(containerHeight)
+        
+        // Try to get the actual rendered height of num.png
+        const numImage = scrollContainer.querySelector('img')
+        if (numImage && numImage.complete && numImage.naturalHeight) {
+          // Calculate the actual rendered height
+          const renderedImageHeight = numImage.offsetHeight || (numImage.naturalHeight * (numImage.offsetWidth / numImage.naturalWidth))
+          const calculatedNumberHeight = renderedImageHeight / 10
+          setNumberHeight(calculatedNumberHeight)
+        } else if (numImage) {
+          // Wait for image to load
+          numImage.onload = () => {
+            const renderedImageHeight = numImage.offsetHeight || (numImage.naturalHeight * (numImage.offsetWidth / numImage.naturalWidth))
+            const calculatedNumberHeight = renderedImageHeight / 10
+            setNumberHeight(calculatedNumberHeight)
+          }
+        }
+      }
+    }
+
+    // Measure on mount and when window resizes
+    measureDimensions()
+    window.addEventListener('resize', measureDimensions)
+    return () => window.removeEventListener('resize', measureDimensions)
+  }, [])
 
   // Generate random positions for particles and lines once using lazy initialization
   const [particlePositions] = useState(() =>
@@ -44,33 +78,32 @@ function App() {
     const startTime = Date.now()
     
     // Calculate the exact target position for the winning number
-    // num.png contains numbers 0-9 stacked vertically (10 numbers total)
-    // Each number takes up exactly 1/10th of the total image height
-    // The scroll area height is approximately 32% of the panel height (178px)
-    // So visible area is about 57px, and each number in num.png is 1/10 of its total height
-    const scrollAreaHeight = 178 * 0.32 // Height of the visible scroll area (~57px)
-    const numImageTotalHeight = scrollAreaHeight * 10 // Full num.png height when displayed
-    const numberHeight = numImageTotalHeight / 10 // Height of each individual number segment
+    // Use measured dimensions if available, otherwise fall back to estimates
+    const panelHeight = 178 // Height of each panel in pixels
+    const actualVisibleHeight = visibleAreaHeight || (panelHeight * 0.48) // Use measured or fallback
+    const actualNumberHeight = numberHeight || (actualVisibleHeight / 1.3) // Use measured or fallback
     
     // Normalize starting positions to nearest number boundary for clean alignment
     const normalizedStartPositions = startPositions.map(pos => {
-      // Round to nearest multiple of numberHeight
-      return Math.round(pos / numberHeight) * numberHeight
+      // Round to nearest multiple of actualNumberHeight
+      return Math.round(pos / actualNumberHeight) * actualNumberHeight
     })
     
-    // Calculate base scroll to show target number at top of visible area
-    // We want to position so the target number is visible in the center/top of the frame
-    const baseScroll = (targetNumber - 1) * numberHeight
+    // Calculate base scroll to center the target number in the visible area
+    // Position the number so it's vertically centered
+    const numberTopPosition = (targetNumber - 1) * actualNumberHeight
+    const centerOffset = (actualVisibleHeight / 2) - (actualNumberHeight / 2)
+    const baseScroll = numberTopPosition + centerOffset
     
     // Add multiple full rotations for effect (same for all panels)
     const rotations = 6 + Math.random() * 2 // 6-8 full rotations
-    const fullRotation = 10 * numberHeight // Full rotation through all 10 numbers (0-9)
+    const fullRotation = 10 * actualNumberHeight // Full rotation through all 10 numbers (0-9)
     
     // Final position must align to show the target number
     const finalTargetPosition = baseScroll + (rotations * fullRotation)
     
     // Ensure it's a perfect multiple for alignment
-    const alignedFinalPosition = Math.round(finalTargetPosition / numberHeight) * numberHeight
+    const alignedFinalPosition = Math.round(finalTargetPosition / actualNumberHeight) * actualNumberHeight
 
     // Add slight stagger delays for visual effect (but all end at same position)
     const staggerDelays = [0, 30, 60, 90, 120, 150] // milliseconds
@@ -83,11 +116,12 @@ function App() {
         const adjustedElapsed = Math.max(0, elapsed - staggerDelays[index])
         const progress = Math.min(adjustedElapsed / duration, 1)
 
-        // Easing function for smooth slowdown (ease-out cubic)
-        const easeOutCubic = 1 - Math.pow(1 - progress, 3)
+        // Easing function for smooth slowdown - stronger ease-out for lottery effect
+        // Uses ease-out quintic for more pronounced slowdown at the end
+        const easeOutQuintic = 1 - Math.pow(1 - progress, 5)
 
         // All panels end at the same final position
-        return startPos + (alignedFinalPosition - startPos) * easeOutCubic
+        return startPos + (alignedFinalPosition - startPos) * easeOutQuintic
       })
 
       setScrollPositions(newPositions)
@@ -259,10 +293,10 @@ function App() {
 
         {/* 1ST PRIZE Message */}
         {showPrize && (
-          <div className="text-center animate-fade-in relative z-20" style={{ marginTop: '20px', marginBottom: '20px' }}>
+          <div className="text-center animate-fade-in relative z-20" style={{ marginTop: '10px', marginBottom: '10px' }}>
             <div className="inline-block">
               <h2 
-                className="mb-4"
+                className="mb-4 animate-color-switch"
                 style={{
                   fontFamily: 'AspireSCBlackOblique-Regular, sans-serif',
                   fontWeight: 900,
@@ -270,8 +304,6 @@ function App() {
                   fontSize: '80px',
                   lineHeight: '100%',
                   letterSpacing: '7%',
-                  color: '#ef4444',
-                  WebkitTextStroke: '1px #ef4444',
                   textShadow: '0 0 20px rgba(139, 92, 246, 0.9), 0 0 40px rgba(139, 92, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.5), 0 0 80px rgba(96, 165, 250, 0.4), 2px 2px 0px rgba(0, 0, 0, 0.3)'
                 }}
               >
@@ -282,7 +314,7 @@ function App() {
         )}
 
         {/* Number Panels Container - matching Figma layout exactly */}
-        <div className="flex gap-3 md:gap-4 relative z-10 justify-center items-end" style={{ width: '100%', maxWidth: '1200px', marginTop: 'auto', marginBottom: '80px' }}>
+        <div className="flex gap-3 md:gap-4 relative z-10 justify-center items-end" style={{ width: '100%', maxWidth: '1200px', marginTop: showPrize ? '0' : 'auto', marginBottom: '80px' }}>
           {numbers.map((panelNum, panelIndex) => (
             <div key={panelIndex} className="flex flex-col items-center justify-end" style={{ margin: 0, padding: 0 }}>
               {/* Number Panel with each.png (includes frame and pedestal) */}
@@ -368,7 +400,7 @@ function App() {
             disabled={isSpinning}
             className={`relative transition-all duration-300 transform ${
               isSpinning
-                ? 'cursor-not-allowed opacity-50'
+                ? 'cursor-not-allowed'
                 : 'hover:scale-105 active:scale-95 cursor-pointer'
             }`}
             style={{
@@ -377,19 +409,24 @@ function App() {
               padding: 0
             }}
           >
-            <img 
-              src="/spin.png" 
-              alt="SPIN"
-              className="max-w-xs md:max-w-sm h-auto"
-              style={{
-                filter: isSpinning ? 'grayscale(50%) brightness(0.7)' : 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.6))',
-                pointerEvents: 'none'
-              }}
-            />
+            {!isSpinning && (
+              <img 
+                src="/spin.png" 
+                alt="SPIN"
+                className="max-w-xs md:max-w-sm h-auto"
+                style={{
+                  filter: 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.6))',
+                  pointerEvents: 'none'
+                }}
+              />
+            )}
             {isSpinning && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-yellow-400 text-xl md:text-2xl font-bold" style={{
-                  textShadow: '0 0 10px rgba(250, 204, 21, 0.8)'
+              <div className="flex items-center justify-center" style={{
+                minWidth: '200px',
+                minHeight: '80px'
+              }}>
+                <span className="text-yellow-400 text-2xl md:text-3xl font-bold" style={{
+                  textShadow: '0 0 10px rgba(250, 204, 21, 0.8), 0 0 20px rgba(250, 204, 21, 0.6)'
                 }}>
                   SPINNING...
                 </span>
