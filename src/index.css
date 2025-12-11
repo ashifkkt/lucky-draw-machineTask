@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Font face for AspireSCBlackOblique-Regular */
+@font-face {
+  font-family: 'AspireSCBlackOblique-Regular';
+  src: url('/fonts/AspireSCBlackOblique-Regular.woff2') format('woff2'),
+       url('/fonts/AspireSCBlackOblique-Regular.woff') format('woff'),
+       url('/fonts/AspireSCBlackOblique-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: oblique;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
 }
