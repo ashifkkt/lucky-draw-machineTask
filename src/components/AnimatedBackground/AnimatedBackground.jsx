@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 function AnimatedBackground() {
-  // Generate random positions for particles and lines once using lazy initialization
   const [particlePositions] = useState(() =>
     Array.from({ length: 20 }).map(() => ({
       left: Math.random() * 100,
@@ -21,7 +20,6 @@ function AnimatedBackground() {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Glowing particles */}
       {particlePositions.map((particle, i) => (
         <div
           key={i}
@@ -35,7 +33,6 @@ function AnimatedBackground() {
         />
       ))}
       
-      {/* Glowing lines */}
       <svg className="absolute inset-0 w-full h-full opacity-30">
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">

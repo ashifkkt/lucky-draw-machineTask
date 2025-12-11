@@ -1,11 +1,8 @@
 function NumberPanel({ panelIndex, scrollPosition, isSpinning, panelRef }) {
   return (
     <div className="flex flex-col items-center justify-end" style={{ margin: 0, padding: 0 }}>
-      {/* Number Panel with each.png (includes frame and pedestal) */}
       <div className="relative flex flex-col items-center justify-end" style={{ margin: 0, padding: 0 }}>
-        {/* each.png contains the entire component: neon frame + pedestal */}
         <div className="relative" style={{ width: '178px', height: 'auto', margin: 0, padding: 0, flexShrink: 0 }}>
-          {/* Background image with frame and pedestal - this is the outer layout */}
           <img 
             src="/each.png" 
             alt={`Panel ${panelIndex + 1}`}
@@ -25,14 +22,10 @@ function NumberPanel({ panelIndex, scrollPosition, isSpinning, panelRef }) {
             }}
           />
           
-          {/* Scrolling numbers using num.png - positioned inside the neon frame area */}
           <div 
             ref={panelRef}
             className="absolute overflow-hidden"
             style={{
-              // Positioned to match the frame opening in each.png
-              // Frame is in upper portion, numbers should be large and prominent
-              // Positioned at bottom of frame area to eliminate gap with pedestal
               bottom: '25%',
               left: '50%',
               transform: 'translateX(-50%)',
@@ -48,7 +41,6 @@ function NumberPanel({ panelIndex, scrollPosition, isSpinning, panelRef }) {
                 transition: isSpinning ? 'none' : 'transform 0.1s ease-out'
               }}
             >
-              {/* Multiple copies of num.png for seamless scrolling */}
               {Array.from({ length: 20 }).map((_, setIndex) => (
                 <img
                   key={setIndex}

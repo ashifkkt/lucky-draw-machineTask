@@ -1,4 +1,4 @@
-import NumberPanel from '../NumberPanel/NumberPanel'
+import NumberPanel from '../NumberPanel'
 
 function NumberPanels({ numbers, scrollPositions, isSpinning, panelRefs, showPrize }) {
   return (
