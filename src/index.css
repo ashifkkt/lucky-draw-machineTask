@@ -2,84 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'AspireSCBlackOblique-Regular';
-  src: url('/fonts/AspireSCBlackOblique-Regular.woff2') format('woff2'),
-       url('/fonts/AspireSCBlackOblique-Regular.woff') format('woff'),
-       url('/fonts/AspireSCBlackOblique-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: oblique;
-  font-display: swap;
-}
-
 :root {
   color-scheme: dark;
 }
 
 body {
-  @apply h-screen bg-slate-950 text-slate-100 antialiased overflow-hidden;
+  @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
 }
 
 #root {
-  height: 100vh;
-  overflow: hidden;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.6s ease-out;
-}
-
-@keyframes color-switch {
-  0%, 100% {
-    color: white;
-    -webkit-text-stroke: 1px white;
-  }
-  50% {
-    color: #ef4444;
-    -webkit-text-stroke: 1px #ef4444;
-  }
-}
-
-.animate-color-switch {
-  animation: color-switch 1s ease-in-out infinite;
-}
-
-@keyframes metallic-shine {
-  0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.8)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)) brightness(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 30px rgba(96, 165, 250, 1)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)) brightness(1.2);
-  }
-}
-
-.metallic-text {
-  animation: metallic-shine 3s ease-in-out infinite;
-  position: relative;
-}
-
-.metallic-text::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
-  mix-blend-mode: overlay;
-  pointer-events: none;
+  min-height: 100vh;
 }
 
