@@ -98,10 +98,10 @@ function Departments({ token, onLogout }) {
             <h1 className="text-2xl font-bold text-gray-900">Departments</h1>
             <div className="flex gap-2">
               <button
-                onClick={() => setShowAddForm(!showAddForm)}
+                onClick={() => setShowAddForm(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {showAddForm ? "Cancel" : "Add Department"}
+                Add Department
               </button>
               <button
                 onClick={onLogout}
@@ -123,67 +123,101 @@ function Departments({ token, onLogout }) {
               {success}
             </div>
           )}
+        </div>
 
-          {showAddForm && (
-            <form
-              onSubmit={handleAddDepartment}
-              className="mb-6 p-4 bg-gray-50 rounded-md"
-            >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Add New Department
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="dept_name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Department Name
-                  </label>
-                  <input
-                    type="text"
-                    id="dept_name"
-                    name="dept_name"
-                    value={formData.dept_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dept_name: e.target.value })
-                    }
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter department name"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    required
-                    rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter description"
-                  />
-                </div>
+        {showAddForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Add New Department
+                </h2>
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setFormData({ dept_name: "", description: "" });
+                    setError("");
+                  }}
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none"
                 >
-                  {loading ? "Adding..." : "Add Department"}
+                  ×
                 </button>
               </div>
-            </form>
-          )}
-        </div>
+              <form onSubmit={handleAddDepartment} className="p-6">
+                {error && (
+                  <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-md text-sm mb-4">
+                    {error}
+                  </div>
+                )}
+                <div className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="dept_name"
+                      className="block text-sm font-semibold text-gray-800 mb-2"
+                    >
+                      Department Name
+                    </label>
+                    <input
+                      type="text"
+                      id="dept_name"
+                      name="dept_name"
+                      value={formData.dept_name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, dept_name: e.target.value })
+                      }
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-400 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Enter department name"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-semibold text-gray-800 mb-2"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      required
+                      rows="4"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      placeholder="Enter description"
+                    />
+                  </div>
+                </div>
+                <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 mt-6 -mx-6 -mb-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setFormData({ dept_name: "", description: "" });
+                      setError("");
+                    }}
+                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                  >
+                    {loading ? "Adding..." : "Add Department"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {selectedDept && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -282,7 +316,7 @@ function Departments({ token, onLogout }) {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {departments.map((dept) => (
-                    <tr key={dept.id || dept.deptId}>
+                    <tr key={dept._id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {dept._id}
                       </td>

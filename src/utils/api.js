@@ -2,6 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 async function handleResponse(response) {
   const data = await response.json();
+  console.log("API Response:", data);
 
   if (!response.ok) {
     throw new Error(data.message || `HTTP error! status: ${response.status}`);
@@ -16,6 +17,7 @@ function getHeaders(token = null) {
   };
 
   if (token) {
+    console.log("Using token in headers:", token);
     headers["Authorization"] = token;
   }
 

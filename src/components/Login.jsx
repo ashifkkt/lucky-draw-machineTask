@@ -50,7 +50,7 @@ function Login({ onSwitchToRegister, onLogin }) {
             </svg>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome Back
+            Welcome Back User
           </h2>
           <p className="text-gray-600">Sign in to your account</p>
         </div>
